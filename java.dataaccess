@@ -1,0 +1,87 @@
+package com.example.servlet;
+
+import com.example.dao.BookDAO;
+import com.example.model.Book;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+
+import java.io.IOException;
+import java.sql.Date;
+import java.util.List;
+
+@WebServlet("/books")
+public class BookServlet extends HttpServlet {
+    private BookDAO dao = new BookDAO();
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String action = req.getParameter("action");
+        if (action == null) action = "list";
+
+        switch (action) {
+            case "add":
+                req.getRequestDispatcher("/add.html").forward(req, resp);
+                break;
+            case "edit":
+                String idStr = req.getParameter("id");
+                if (idStr != null) {
+                    int id = Integer.parseInt(idStr);
+                    Book book = dao.getBookById(id);
+                    req.setAttribute("book", book);
+                    req.getRequestDispatcher("/edit.html").forward(req, resp);
+                } else {
+                    resp.sendRedirect("books");
+                }
+                break;
+            case "delete":
+                if (req.getParameter("id") != null) {
+                    int id = Integer.parseInt(req.getParameter("id"));
+                    dao.deleteBook(id);
+                }
+                resp.sendRedirect("books");
+                break;
+            default:
+                List<Book> list = dao.getAllBooks();
+                req.setAttribute("books", list);
+                req.getRequestDispatcher("/index.html").forward(req, resp);
+                break;
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        String action = req.getParameter("action");
+        if ("create".equals(action)) {
+            String title = req.getParameter("title");
+            String author = req.getParameter("author");
+            double price = Double.parseDouble(req.getParameter("price"));
+            String pd = req.getParameter("published_date");
+            Date publishedDate = (pd == null || pd.isEmpty()) ? null : Date.valueOf(pd);
+
+            Book b = new Book();
+            b.setTitle(title);
+            b.setAuthor(author);
+            b.setPrice(price);
+            b.setPublishedDate(publishedDate);
+
+            dao.addBook(b);
+            resp.sendRedirect("books");
+        } else if ("update".equals(action)) {
+            int id = Integer.parseInt(req.getParameter("id"));
+            String title = req.getParameter("title");
+            String author = req.getParameter("author");
+            double price = Double.parseDouble(req.getParameter("price"));
+            String pd = req.getParameter("published_date");
+            Date publishedDate = (pd == null || pd.isEmpty()) ? null : Date.valueOf(pd);
+
+            Book b = new Book(id, title, author, price, publishedDate);
+            dao.updateBook(b);
+            resp.sendRedirect("books");
+        } else {
+            resp.sendRedirect("books");
+        }
+    }
+}
