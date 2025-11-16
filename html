@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Book List</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Book Management</h1>
+    <a class="btn" href="books?action=add">+ Add New Book</a>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Title</th><th>Author</th><th>Price</th><th>Published</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <!-- The servlet forwards list as request attribute "books" -->
+        <!-- We'll use simple JSP-style notes: if you want pure static HTML, you'll need JSP to render list -->
+        <!-- For simplicity, we will use JSP EL here: rename this file to index.jsp and enable JSP -->
+        <!-- But if you prefer static HTML + JavaScript fetch, we can do that too. -->
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
